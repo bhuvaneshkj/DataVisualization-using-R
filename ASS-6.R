@@ -1,0 +1,45 @@
+setwd("C:/Users/chat2/Downloads")
+data<- read.csv("E50FlowData.csv")
+
+library(tidyverse)
+
+library(dplyr)
+library(ggplot2)
+library(extrafont)
+library(plyr)
+library(scales)
+library(ggthemes)
+
+which(is.na(data))
+sum(is.na(data))
+as.POSIXct(data$Timestamp,format="%m/%d/%Y %H:%M") 
+data1 <- data[ which(data$Station >308500 & data$Station < 313631),]
+unique( data1$Station )
+data1$hour <- format(as.POSIXct(data1$Timestamp, format="%m/%d/%Y %H:%M"), format="%H")
+data1
+#aggregate(x$Frequency, by=list(Category=x$Category), FUN=sum)
+
+data1$Total.Flow
+
+stations <-factor(data1$Station)
+
+ggplot(data1,aes(y=data1$Total.Flow,x=data1$hour, fill = factor(data1$Station))) + geom_area(position = "stack")
+
+ggplot(data1, aes(hour, Total.Flow, group = Station)) + 
+  geom_point() + 
+  geom_line()+ggtitle('Traffic Distribution for every hour on 10 different stations')+ xlab('Hour') + ylab('Traffic Flow') 
+
+
+ggplot(data1, aes(data1$hour, data1$Total.Flow, group = stations)) +
+  geom_line(aes(colour = stations), position = "stack") +
+  ggtitle('Traffic Distribution for every hour on 10 different stations')+ xlab('Hour') + ylab('Traffic Flow') 
+
+
+ggplot(data1, aes(data1$hour, data1$Total.Flow, group = data1$Station)) +
+  geom_area(aes(fill = stations)) +
+  geom_line(aes(group = data1$Station), position = "stack")+
+  geom_line()+ggtitle('Traffic Distribution for every hour on 10 different stations')+ xlab('Hour') + ylab('Traffic Flow') 
+
+
+ggplot() + geom_bar(aes(y = data1$Total.Flow, x = data1$hour, fill = stations), data = data1,
+                    stat="identity")+ ggtitle('Traffic Distribution for every hour on 10 different stations')+ xlab('Hour') + ylab('Traffic Flow') 
